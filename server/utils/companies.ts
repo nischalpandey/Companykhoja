@@ -84,6 +84,8 @@ function computeStatistics() {
   const yearlyGrowth: Record<number, number> = {}
   const timeline: Record<string, number> = {}
 
+  let maxDate = ''
+  let maxUpdatedAt = ''
   for (const company of data) {
     byProvince[company.province] = (byProvince[company.province] || 0) + 1
     byDistrict[company.district] = (byDistrict[company.district] || 0) + 1
@@ -95,10 +97,35 @@ function computeStatistics() {
     yearlyGrowth[year] = (yearlyGrowth[year] || 0) + 1
     const date = company.registrationDate.split('T')[0]
     timeline[date] = (timeline[date] || 0) + 1
+    if (date > maxDate) maxDate = date
+    if (company.updatedAt > maxUpdatedAt) maxUpdatedAt = company.updatedAt
+  }
+
+  let todayRegistrations = 0
+  let weeklyRegistrations = 0
+  let monthlyRegistrations = 0
+  if (maxDate) {
+    const maxParts = maxDate.split('-').map(Number)
+    const maxYear = maxParts[0]
+    const maxMonth = maxParts[1]
+    const maxDay = maxParts[2]
+    for (const company of data) {
+      const d = company.registrationDate.split('T')[0]
+      if (d === maxDate) todayRegistrations++
+      const p = d.split('-').map(Number)
+      const diffDays = (maxYear - p[0]) * 365 + (maxMonth - p[1]) * 30 + (maxDay - p[2])
+      if (diffDays >= 0 && diffDays <= 7) weeklyRegistrations++
+      if (diffDays >= 0 && diffDays <= 30) monthlyRegistrations++
+    }
   }
 
   return {
     totalCompanies: data.length,
+    latestRegistrationDate: maxDate,
+    lastUpdated: maxUpdatedAt,
+    todayRegistrations,
+    weeklyRegistrations,
+    monthlyRegistrations,
     byProvince,
     byDistrict,
     byType,
@@ -175,6 +202,7 @@ export function searchCompanies(q: string, filters: Record<string, string> = {},
   if (mergedFilters.rokkaStatus) results = results.filter(c => c.rokkaStatus === mergedFilters.rokkaStatus)
   if (mergedFilters.letter) results = results.filter(c => c.nameEnglish.toLowerCase().startsWith(mergedFilters.letter!.toLowerCase()))
   if (mergedFilters.registrationYear) results = results.filter(c => getBsYear(c.registrationDate) === parseInt(mergedFilters.registrationYear!))
+  if (mergedFilters.registrationDate) results = results.filter(c => c.registrationDate.split('T')[0] === mergedFilters.registrationDate)
 
   if (sort === 'newest') results.sort((a, b) => b.registrationDate.localeCompare(a.registrationDate))
   else if (sort === 'oldest') results.sort((a, b) => a.registrationDate.localeCompare(b.registrationDate))

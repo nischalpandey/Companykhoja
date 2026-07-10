@@ -142,6 +142,8 @@ export interface OcrCompanyData {
 
 export interface Statistics {
   totalCompanies: number
+  latestRegistrationDate: string
+  lastUpdated: string
   todayRegistrations: number
   weeklyRegistrations: number
   monthlyRegistrations: number

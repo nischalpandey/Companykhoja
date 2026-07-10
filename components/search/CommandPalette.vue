@@ -110,7 +110,7 @@ watch(() => searchStore.commandPaletteOpen, (open) => {
 watch(query, async (val) => {
   if (val.length < 2) { companyResults.value = []; return }
   const results = await searchEngine.autocomplete(val, 5)
-  const companies = await Promise.all(results.map((r: SearchSuggestion) => searchEngine.getCompanyById(r.text)))
+  const companies = await Promise.all(results.map((r: SearchSuggestion) => searchEngine.getCompanyById(r.id)))
   companyResults.value = companies.filter(Boolean) as Company[]
 })
 

@@ -68,7 +68,9 @@
             <div class="text-sm text-surface-500 dark:text-surface-400 mt-1">Provinces</div>
           </div> -->
           <div class="bg-white dark:bg-surface-800/50 rounded-2xl border border-surface-200 dark:border-surface-700/50 p-5 text-center hover:border-primary-300 dark:hover:border-primary-700 transition-all">
-            <div class="text-2xl font-bold text-surface-900 dark:text-surface-100">{{ formatNumber(Object.keys(stats.byDistrict).length) }}</div>
+            <div class="text-2xl font-bold text-surface-900 dark:text-surface-100">{{ 
+              Object.keys(stats.byDistrict).length > 77?77:
+              formatNumber(Object.keys(stats.byDistrict).length) }}</div>
             <div class="text-sm text-surface-500 dark:text-surface-400 mt-1">Districts</div>
           </div>
           <div class="bg-white dark:bg-surface-800/50 rounded-2xl border border-surface-200 dark:border-surface-700/50 p-5 text-center hover:border-primary-300 dark:hover:border-primary-700 transition-all">
@@ -159,7 +161,7 @@ const suggestions = ref<SearchSuggestion[]>([])
 const showSuggestions = ref(false)
 const router = useRouter()
 const searchEngine = useSearchEngine()
-const stats = ref<import('~/types').Statistics>({ totalCompanies: 0, todayRegistrations: 0, weeklyRegistrations: 0, monthlyRegistrations: 0, byProvince: {}, byDistrict: {}, byType: {}, byOwnership: {}, byRokka: {}, byCategory: {}, yearlyGrowth: [], timeline: [] })
+const stats = ref<import('~/types').Statistics>({ totalCompanies: 0, latestRegistrationDate: '', lastUpdated: '', todayRegistrations: 0, weeklyRegistrations: 0, monthlyRegistrations: 0, byProvince: {}, byDistrict: {}, byType: {}, byOwnership: {}, byRokka: {}, byCategory: {}, yearlyGrowth: [], timeline: [] })
 const latestCompanies = ref<Company[]>([])
 
 onMounted(async () => {

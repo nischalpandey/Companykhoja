@@ -5,7 +5,7 @@ import {
   BuildingOfficeIcon, WrenchIcon, BanknotesIcon, BoltIcon, CogIcon, SunIcon,
   FireIcon, HomeIcon, ShoppingBagIcon, TruckIcon, UsersIcon, VideoCameraIcon,
   MegaphoneIcon, MapIcon, RocketLaunchIcon, Squares2X2Icon,
-  CalendarIcon, ArrowTrendingUpIcon, MapPinIcon,
+  CalendarIcon, CalendarDaysIcon, ArrowTrendingUpIcon, MapPinIcon, BriefcaseIcon,
 } from '@heroicons/vue/24/outline'
 
 const iconRegistry: Record<string, any> = {
@@ -15,7 +15,7 @@ const iconRegistry: Record<string, any> = {
   BuildingOfficeIcon, WrenchIcon, BanknotesIcon, BoltIcon, CogIcon, SunIcon,
   FireIcon, HomeIcon, ShoppingBagIcon, TruckIcon, UsersIcon, VideoCameraIcon,
   MegaphoneIcon, MapIcon, RocketLaunchIcon, Squares2X2Icon,
-  CalendarIcon, ArrowTrendingUpIcon, MapPinIcon,
+  CalendarIcon, CalendarDaysIcon, ArrowTrendingUpIcon, MapPinIcon, BriefcaseIcon,
   GraduationCapIcon: AcademicCapIcon,
   CarIcon: CogIcon,
   TrendingUpIcon: ArrowTrendingUpIcon,

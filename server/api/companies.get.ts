@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
   if (query.rokka) filters.rokkaStatus = String(query.rokka)
   if (query.year) filters.registrationYear = String(query.year)
   if (query.letter) filters.letter = String(query.letter)
+  if (query.date) filters.registrationDate = String(query.date)
 
   const result = searchCompanies(q, filters, sort, page, limit)
 

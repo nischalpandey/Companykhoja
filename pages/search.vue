@@ -178,7 +178,11 @@
           <div v-if="results?.didYouMean" class="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
             <p class="text-amber-800 dark:text-amber-200 text-sm">
               Did you mean:
-              <button @click="query = results.didYouMean!; executeSearch()" class="font-semibold underline hover:no-underline">
+              <button @click=" router.replace({ query: {
+                q: results.didYouMean!,
+              } });
+
+               executeSearch()" class="font-semibold underline hover:no-underline">
                 {{ results.didYouMean }}
               </button>
               ?

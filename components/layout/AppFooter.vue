@@ -4,7 +4,7 @@
       <div class="grid md:grid-cols-4 gap-8 lg:gap-12">
         <div class="md:col-span-1">
           <NuxtLink to="/" class="flex items-center mb-4">
-              <img src="/imglogo.png" alt="CompanyKhoja Logo"  class="">
+              <img src="/imglogo.png" alt="CompanyKhoja Logo" class="">
           </NuxtLink>
           <p class="text-sm text-gray-500 dark:text-surface-400 leading-relaxed">Open-source search engine for registered companies in Nepal.</p>
         </div>
@@ -38,9 +38,25 @@
       </div>
 
       <div class="mt-12 pt-8 border-t border-gray-200 dark:border-surface-800 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p class="text-sm text-gray-500 dark:text-surface-400">CompanyKhoja. Open source under MIT License.</p>
-        <p class="text-sm text-gray-500 dark:text-surface-400">Data sourced from <a href="https://ocr.gov.np" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">OCR, Nepal</a>.</p>
+        <p class="text-sm text-gray-500 dark:text-surface-400">CompanyKhoja. Open source under MIT License. Built by <a href="https://github.com/nischalpandey" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">Nischal</a></p>
+
+        <p class="text-sm text-gray-500 dark:text-surface-400">Data last updated: {{ lastUpdated }}. Data sourced from <a href="https://ocr.gov.np" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">OCR, Nepal</a>.</p>
       </div>
     </div>
   </footer>
 </template>
+
+<script setup lang="ts">
+const lastUpdated = ref('')
+
+onMounted(async () => {
+  try {
+    const res = await fetch('/api/stats')
+    const json = await res.json()
+    if (json.success && json.data?.lastUpdated) {
+      const d = new Date(json.data.lastUpdated)
+      lastUpdated.value = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    }
+  } catch {}
+})
+</script>
