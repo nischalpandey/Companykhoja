@@ -19,12 +19,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "typecheck": "nuxt typecheck",
-    "data:fetch": "node scripts/fetch-data.mjs",
-    "data:build": "node scripts/build-index.mjs",
-    "data:full": "npm run data:fetch && npm run data:build",
-    "deploy": "npm run generate && npm run deploy:gh",
-    "deploy:gh": "gh-pages -d .output/public"
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.19",
