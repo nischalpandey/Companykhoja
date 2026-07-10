@@ -4,5 +4,9 @@ node_modules
 .env
 .output
 .nuxt
-scripts/*
-.github/workflows/*
+*.log
+.DS_Store
+coverage/
+dist/
+scripts/
+.github/

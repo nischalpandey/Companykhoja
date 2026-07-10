@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://nischalpandey.github.io/companykhoja/sitemap.xml

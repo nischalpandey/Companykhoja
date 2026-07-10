@@ -130,10 +130,9 @@
         <div class="flex-1 min-w-0">
           <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div class="text-sm text-surface-500 dark:text-surface-400">
-              <span v-if="results" class="font-semibold text-surface-900 dark:text-surface-100">{{ formatNumber(results.total) }}</span>
-              <span v-else class="font-semibold text-surface-900 dark:text-surface-100">-</span>
+              <span class="font-semibold text-surface-900 dark:text-surface-100">{{ results ? formatNumber(results.total) : '-' }}</span>
               results found
-              <span v-if="results && results.executionTimeMs" class="text-surface-400">({{ results.executionTimeMs }}ms)</span>
+              <span v-if="results?.executionTimeMs" class="text-surface-400">({{ results.executionTimeMs }}ms)</span>
             </div>
 
             <div class="flex items-center gap-3">
@@ -216,7 +215,7 @@
                 <ChevronRightIcon class="w-5 h-5 text-surface-600 dark:text-surface-400" />
               </button>
             <!-- Web Results -->
-            <div v-if="webResults && results?.companies?.length" class="mt-8 pt-8 border-t border-surface-200 dark:border-surface-700">
+            <div v-if="query && webResults && results?.companies?.length" class="mt-8 pt-8 border-t border-surface-200 dark:border-surface-700">
               <button @click="showWebResults = !showWebResults" class="flex items-center gap-2 text-surface-900 dark:text-surface-100 font-semibold mb-4 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 <MagnifyingGlassIcon class="w-5 h-5" />
                 Web Results for "{{ query }}"
@@ -339,13 +338,13 @@ onMounted(async () => {
   if (year) filters.value.registrationYear = parseInt(String(year))
   if (sortParam) sort.value = String(sortParam) as SortOption
   if (pageParam) page.value = parseInt(String(pageParam))
-  if (query.value || hasActiveFilters.value) executeSearch()
+  executeSearch()
 })
 
 let searchTimer: ReturnType<typeof setTimeout>
 function handleInput() {
   clearTimeout(searchTimer)
-  if (query.value.length < 2) { results.value = null; return }
+  if (!query.value && !hasActiveFilters.value) return
   searchTimer = setTimeout(() => {
     page.value = 1
     executeSearch()
@@ -353,7 +352,6 @@ function handleInput() {
 }
 
 async function executeSearch() {
-  if (!query.value && !hasActiveFilters.value) { results.value = null; return }
   clearTimeout(searchTimer)
   loading.value = true
   try {
@@ -383,7 +381,7 @@ async function fetchWebResults() {
   } catch { webResults.value = null }
 }
 function handlePageClick(p: number | string) { if (typeof p === 'number') { page.value = p; executeSearch() } }
-function clearSearch() { query.value = ''; results.value = null; router.replace({ query: {} }) }
+function clearSearch() { query.value = ''; page.value = 1; router.replace({ query: {} }); executeSearch() }
 function clearAllFilters() { filters.value = {}; page.value = 1; executeSearch() }
 function toggleAlphabet(letter: string) { filters.value.alphabet = filters.value.alphabet === letter ? undefined : letter; page.value = 1; executeSearch() }
 function handleExport(format: string) { showExportMenu.value = false; if (!results.value?.companies.length) return; exportCompanies(results.value.companies, { format: format as any }) }
