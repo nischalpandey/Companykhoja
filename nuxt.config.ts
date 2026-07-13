@@ -3,7 +3,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
   // ── App Configuration ─────────────────────────────────────────────────────
   app: {
-    baseURL: '/companykhoja/',
+   
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
@@ -67,6 +67,8 @@ export default defineNuxtConfig({
     build: {
       target: 'esnext',
       cssMinify: true,
+          sourcemap: false,
+
       rollupOptions: {
         output: {
           manualChunks: {
@@ -129,6 +131,8 @@ export default defineNuxtConfig({
     payloadExtraction: true,
     typedPages: true,
     viewTransition: true,
+      renderJsonPayloads: true,
+
   },
 
   // ─- DevTools ───────────────────────────────────────────────────────────────
