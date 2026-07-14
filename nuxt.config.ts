@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   // ── App Configuration ─────────────────────────────────────────────────────
   app: {
     // baseURL: process.env.NODE_ENV === 'production' ? '/Companykhoja/' : '/',
+    baseURL: '/', // for custom domain deployment, set this to '/'
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
@@ -98,6 +99,8 @@ export default defineNuxtConfig({
     },
   },
 
+
+
   // ─- Server routes are handled client-side ─────────────────────────────────
   // API routes (server/api/) exist for development convenience only.
   // In the static build, all search/stats logic runs in the browser
@@ -106,6 +109,8 @@ export default defineNuxtConfig({
   // ─- Runtime Config ────────────────────────────────────────────────────────
   runtimeConfig: {
     public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://companykhoja.ngp.com.np',
+      baseURL: '/',
       // siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nischalpandey.github.io/Companykhoja',
       // baseURL: process.env.NODE_ENV === 'production' ? '/Companykhoja/' : '/',
       version: '1.0.0',
