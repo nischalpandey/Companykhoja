@@ -269,9 +269,8 @@ onMounted(async () => {
     searchStore.addRecentlyViewed(company.value)
     generateQRCode()
     fetchEnrichment()
-    const res = await fetch(`/api/companies?category=${encodeURIComponent(company.value.category)}&limit=6`)
-    const json = await res.json()
-    similarCompanies.value = (json.data || []).filter((c: Company) => c.id !== company.value!.id).slice(0, 5)
+    const result = await searchEngine.search('', { category: company.value.category as any }, 'newest', 1, 6)
+    similarCompanies.value = result.companies.filter(c => c.id !== company.value!.id).slice(0, 5)
   }
 })
 

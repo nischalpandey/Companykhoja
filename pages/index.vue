@@ -166,9 +166,8 @@ const latestCompanies = ref<Company[]>([])
 
 onMounted(async () => {
   stats.value = await searchEngine.getStatistics()
-  const res = await fetch('/api/companies?sort=newest&limit=6')
-  const json = await res.json()
-  latestCompanies.value = json.data || []
+  const result = await searchEngine.search('', {}, 'newest', 1, 6)
+  latestCompanies.value = result.companies
 })
 
 let debounceTimer: ReturnType<typeof setTimeout>

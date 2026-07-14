@@ -376,9 +376,9 @@ async function executeSearch() {
 async function fetchWebResults() {
   try {
     const res = await fetch(`/api/search-web?q=${encodeURIComponent(query.value)}`)
-    webResults.value = await res.json()
-    showWebResults.value = false
-  } catch { webResults.value = null }
+    if (res.ok) { webResults.value = await res.json(); showWebResults.value = false; return }
+  } catch {}
+  webResults.value = null
 }
 function handlePageClick(p: number | string) { if (typeof p === 'number') { page.value = p; executeSearch() } }
 function clearSearch() { query.value = ''; page.value = 1; router.replace({ query: {} }); executeSearch() }

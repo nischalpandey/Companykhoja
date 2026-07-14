@@ -3,7 +3,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
   // ── App Configuration ─────────────────────────────────────────────────────
   app: {
-   
+    baseURL: process.env.NODE_ENV === 'production' ? '/companykhoja/' : '/',
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
@@ -97,6 +97,11 @@ export default defineNuxtConfig({
       '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     },
   },
+
+  // ─- Server routes are handled client-side ─────────────────────────────────
+  // API routes (server/api/) exist for development convenience only.
+  // In the static build, all search/stats logic runs in the browser
+  // via the useClientSearch composable, which loads companies.json directly.
 
   // ─- Runtime Config ────────────────────────────────────────────────────────
   runtimeConfig: {

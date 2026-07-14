@@ -48,13 +48,13 @@
 
 <script setup lang="ts">
 const lastUpdated = ref('')
+const searchEngine = useSearchEngine()
 
 onMounted(async () => {
   try {
-    const res = await fetch('/api/stats')
-    const json = await res.json()
-    if (json.success && json.data?.lastUpdated) {
-      const d = new Date(json.data.lastUpdated)
+    const stats = await searchEngine.getStatistics()
+    if (stats?.lastUpdated) {
+      const d = new Date(stats.lastUpdated)
       lastUpdated.value = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     }
   } catch {}

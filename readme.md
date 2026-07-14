@@ -83,33 +83,22 @@ https://camis.ocr.gov.np/gateway/external/api/company-registration/search-compan
 ## Architecture
 
 ```
-┌─ Browser ─────────────────────────────┐
-│  Nuxt 3 (static SPA)                  │
-│  ├─ Components (Vue 3)               │
-│  ├─ Pinia stores                     │
-│  ├─ Chart.js + vue-chartjs           │
-│  └─ Tailwind CSS                     │
-├───────────────────────────────────────┤
-│  Static JSON (public/data/)           │
-│  All data loaded client-side          │
-└───────────────────────────────────────┘
+┌─ Browser ───────────────────────────────────┐
+│  Nuxt 3 (fully static SPA)                  │
+│  ├─ Components (Vue 3)                     │
+│  ├─ Pinia stores                           │
+│  ├─ MiniSearch + Fuse.js (client-side)     │
+│  ├─ Chart.js + vue-chartjs                 │
+│  └─ Tailwind CSS                           │
+├─────────────────────────────────────────────┤
+│  Static JSON (public/data/companies.json)   │
+│  Loaded once, searched entirely in browser  │
+└─────────────────────────────────────────────┘
 ```
 
-No backend server is required at runtime. The Nuxt build generates a fully static site. Search indexing (MiniSearch + Fuse.js), filtering, and sorting all happen in the browser.
+**No backend server required at runtime.** The Nuxt build generates a fully static site deployable to GitHub Pages, Netlify, Vercel, or any static host.
 
-## API (Internal)
-
-The app provides internal API endpoints used during build and for autocomplete:
-
-| Endpoint | Purpose |
-|---|---|
-| `GET /api/companies` | Search with filters, sort, pagination |
-| `GET /api/autocomplete` | Type-ahead suggestions |
-| `GET /api/companies/:id` | Single company lookup |
-| `GET /api/stats` | Aggregate statistics |
-| `GET /api/search-web` | Web results proxy (DuckDuckGo) |
-
-These are Nuxt server routes that read from the local JSON file. In the static build, they are pre-rendered where possible.
+All search indexing (MiniSearch + Fuse.js), filtering, sorting, and statistics computation happen in the browser after loading the data file once. This means zero API calls at runtime — the entire app works offline after the initial page load.
 
 ## Tech Stack
 
@@ -129,22 +118,31 @@ These are Nuxt server routes that read from the local JSON file. In the static b
 ### Build
 
 ```bash
+# Generic static build (any host)
 npm run generate
+
+# GitHub Pages-specific build
+npm run build:gh
 ```
 
 Outputs to `.output/public/`. Serve with any static file server.
 
-### Deployment
+### Deployment to GitHub Pages
 
 The project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that:
-1. Builds the static site on push to `main`
-2. Deploys to GitHub Pages
+1. Builds the static site using `npx nuxt build --preset github_pages` on push to `main`
+2. Deploys to GitHub Pages automatically
+
+The `github_pages` preset automatically sets the correct `baseURL` based on your repository name, so no additional configuration is needed.
 
 For manual deployment:
 
 ```bash
-npm run deploy
+npm run build:gh
+# Then upload .output/public to GitHub Pages via the UI or gh-pages CLI
 ```
+
+> **Note:** The site is fully static. All search, filtering, and statistics are computed client-side. No server or API is required at runtime.
 
 ### Environment Variables
 
@@ -155,4 +153,4 @@ npm run deploy
 
 ## License
 
-MIT
+Apache-2.0

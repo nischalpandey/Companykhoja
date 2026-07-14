@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "Open-source search engine for registered companies in Nepal",
   "author": "CompanyKhoja Contributors",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "private": false,
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "build:gh": "npx nuxt build --preset github_pages",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
