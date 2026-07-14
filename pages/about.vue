@@ -14,7 +14,7 @@
           </div>
           <div>
             <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-3">Open Source</h2>
-            <p>This project is fully open source under the MIT License. View the source code on <a href="https://github.com/nischalpandey/companykhoja" target="_blank" rel="noopener" class="text-primary-600 dark:text-primary-400 hover:underline">GitHub</a>.</p>
+            <p>This project is fully open source under the Apache License. View the source code on <a href="https://github.com/nischalpandey/companykhoja" target="_blank" rel="noopener" class="text-primary-600 dark:text-primary-400 hover:underline">GitHub</a>.</p>
           </div>
         </div>
       </div>

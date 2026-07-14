@@ -106,8 +106,8 @@ export default defineNuxtConfig({
   // ─- Runtime Config ────────────────────────────────────────────────────────
   runtimeConfig: {
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nischalpandey.github.io/companykhoja',
-      apiBase: 'https://camis.ocr.gov.np/gateway/external/api',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nischalpandey.github.io/Companykhoja',
+      baseURL: process.env.NODE_ENV === 'production' ? '/Companykhoja/' : '/',
       version: '1.0.0',
     },
   },

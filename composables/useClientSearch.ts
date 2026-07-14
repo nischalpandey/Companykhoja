@@ -16,7 +16,9 @@ async function ensureLoaded() {
   if (loadPromise) return loadPromise
   loadPromise = (async () => {
     if (data.length) return
-    const res = await fetch('/data/companies.json')
+    const config = useRuntimeConfig()
+    const baseURL = config.public.baseURL
+    const res = await fetch(`${baseURL}data/companies.json`)
     data = await res.json()
     miniSearch = new MiniSearch({
       fields: SEARCH_FIELDS,

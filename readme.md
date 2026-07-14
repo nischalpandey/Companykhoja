@@ -1,8 +1,10 @@
 # CompanyKhoja
 
-> Open-source search engine for registered companies in Nepal
+> Open-source (Apache-2.0) search engine for registered companies in Nepal
 
 Search, filter, and explore data from the Office of the Company Registrar (OCR), Nepal — all client-side, zero runtime API dependencies.
+
+[https://nischalpandey.github.io/Companykhoja](Live Preview)
 
 ## Features
 
@@ -58,7 +60,7 @@ The app runs at `http://localhost:3000`. Data is stored locally in `public/data/
 Data is fetched from the **Office of the Company Registrar (OCR), Nepal** public API at:
 
 ```
-https://camis.ocr.gov.np/gateway/external/api/company-registration/search-company-details
+https://camis.ocr.gov.np/company-details
 ```
 
 
@@ -149,7 +151,7 @@ npm run build:gh
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `NUXT_PUBLIC_SITE_URL` | No | `https://nischalpandey.github.io/companykhoja` | Public site URL |
-| `OCR_API_URL` | For data sync | `https://camis.ocr.gov.np/gateway/external/api/company-registration/search-company-details` | OCR API endpoint |
+| `OCR_API_URL` | For data sync | `https://camis.ocr.gov.np/` | OCR API endpoint |
 
 ## License
 
