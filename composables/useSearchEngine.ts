@@ -25,6 +25,10 @@ export function useSearchEngine() {
     return client.getCompanyById(id)
   }
 
+  async function getCompanyBySlug(slug: string): Promise<Company | undefined> {
+    return client.getCompanyBySlug(slug)
+  }
+
   function getAllCompanies(): Company[] {
     return []
   }
@@ -38,7 +42,7 @@ export function useSearchEngine() {
   }
 
   function isIndexReady() {
-    return client.isIndexReady()
+    return client.isIndexReady() as import('vue').Ref<boolean>
   }
 
   return {
@@ -46,6 +50,7 @@ export function useSearchEngine() {
     search,
     autocomplete,
     getCompanyById,
+    getCompanyBySlug,
     getAllCompanies,
     getFilterOptions,
     getStatistics,

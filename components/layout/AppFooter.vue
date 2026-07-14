@@ -38,7 +38,7 @@
       </div>
 
       <div class="mt-12 pt-8 border-t border-gray-200 dark:border-surface-800 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p class="text-sm text-gray-500 dark:text-surface-400">CompanyKhoja. Open source under MIT License. Built by <a href="https://github.com/nischalpandey" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">Nischal</a></p>
+        <p class="text-sm text-gray-500 dark:text-surface-400">CompanyKhoja. Open source under Apache  License. Built by <a href="https://github.com/nischalpandey" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">Nischal</a></p>
 
         <p class="text-sm text-gray-500 dark:text-surface-400">Data last updated: {{ lastUpdated }}. Data sourced from <a href="https://ocr.gov.np" target="_blank" rel="noopener" class="text-blue-600 dark:text-blue-400 hover:underline">OCR, Nepal</a>.</p>
       </div>
@@ -57,6 +57,6 @@ onMounted(async () => {
       const d = new Date(stats.lastUpdated)
       lastUpdated.value = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     }
-  } catch {}
+  } catch { lastUpdated.value = 'Loading…' }
 })
 </script>

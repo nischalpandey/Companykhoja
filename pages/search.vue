@@ -1,4 +1,11 @@
 <template>
+  <div v-if="dataLoading && !results" class="flex items-center justify-center min-h-[60vh]">
+    <div class="text-center">
+      <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <p class="text-surface-500 dark:text-surface-400">Loading company data…</p>
+    </div>
+  </div>
+  <template v-else>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Search Header -->
       <div class="mb-8">
@@ -267,10 +274,11 @@
       </div>
     </div>
     </div>
+  </template>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import {
   MagnifyingGlassIcon, XMarkIcon, FunnelIcon, ArrowDownTrayIcon,
   ChevronLeftIcon, ChevronRightIcon
@@ -282,6 +290,9 @@ useHead({ title: 'Search Companies' })
 const route = useRoute()
 const router = useRouter()
 const searchEngine = useSearchEngine()
+const isReady = searchEngine.isIndexReady()
+const dataLoading = ref(!isReady.value)
+watch(isReady, (ready) => { dataLoading.value = !ready })
 const { exportCompanies } = useExport()
 
 const query = ref('')
@@ -299,8 +310,8 @@ const filterOptions = ref({ provinces: [], districts: [], types: [], ownerships:
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
 const searchExamples = [
-  'registered:2083', 'district:kathmandu', 'type:private',
-  'ownership:nepali', 'rokka:false', 'year:2082', 'tech',
+  'registered:2083', 'kathmandu', 'private',
+  'nepali', 'rokka:true', 'year:2082', 'tech',
 ]
 
 const exportFormats = [
@@ -327,7 +338,7 @@ onMounted(async () => {
 
 
 
-  const { q, province, district, type, ownership, category, rokka, year, sort: sortParam, page: pageParam } = route.query
+  const { q, province, district, type, ownership, category, rokka, year, date, since, sort: sortParam, page: pageParam } = route.query
   if (q) query.value = String(q)
   if (province) filters.value.province = String(province)
   if (district) filters.value.district = String(district)
@@ -336,6 +347,8 @@ onMounted(async () => {
   if (category) filters.value.category = String(category) as any
   if (rokka) filters.value.rokkaStatus = String(rokka) as any
   if (year) filters.value.registrationYear = parseInt(String(year))
+  if (date) filters.value.registrationDate = String(date)
+  if (since) filters.value.since = String(since)
   if (sortParam) sort.value = String(sortParam) as SortOption
   if (pageParam) page.value = parseInt(String(pageParam))
   executeSearch()
@@ -367,6 +380,8 @@ async function executeSearch() {
     if (filters.value.category) qp.category = filters.value.category
     if (filters.value.rokkaStatus) qp.rokka = filters.value.rokkaStatus
     if (filters.value.registrationYear) qp.year = String(filters.value.registrationYear)
+    if (filters.value.registrationDate) qp.date = filters.value.registrationDate
+    if (filters.value.since) qp.since = filters.value.since
     if (sort.value !== 'newest') qp.sort = sort.value
     if (page.value > 1) qp.page = String(page.value)
     router.replace({ query: qp })

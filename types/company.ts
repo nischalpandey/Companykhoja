@@ -42,9 +42,6 @@ export type RokkaStatus = 'Active' | 'Under Rokka' | 'Dissolved' | 'Unknown'
 
 export type CompanyCategory =
   | 'Technology'
-  | 'Software'
-  | 'IT'
-  | 'AI'
   | 'Education'
   | 'School'
   | 'College'
@@ -79,6 +76,8 @@ export interface SearchFilters {
   municipality?: string
   registrationYear?: number
   registrationMonth?: number
+  registrationDate?: string
+  since?: string
   companyType?: CompanyType
   ownership?: OwnershipType
   rokkaStatus?: RokkaStatus
@@ -144,6 +143,7 @@ export interface Statistics {
   totalCompanies: number
   latestRegistrationDate: string
   lastUpdated: string
+  todayBS: string
   todayRegistrations: number
   weeklyRegistrations: number
   monthlyRegistrations: number

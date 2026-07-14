@@ -1,4 +1,24 @@
 <template>
+    <div v-if="dataLoading" class="flex items-center justify-center min-h-[60vh]">
+      <div class="text-center">
+  <div class="relative w-12 h-12 mx-auto mb-4">
+    <!-- Spinner -->
+    <div class="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+
+    <!-- Logo -->
+    <img
+      src="/logo.png"
+      alt="CompanyKhoja Logo"
+      class="absolute inset-0 m-auto w-6 h-6 object-contain"
+    />
+  </div>
+
+  <p class="text-surface-500 dark:text-surface-400">
+    Loading company data…
+  </p>
+</div>
+    </div>
+    <template v-else>
     <!-- Hero -->
     <section class="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24">
       <div class="absolute inset-0" />
@@ -38,7 +58,7 @@
                     v-for="s in suggestions"
                     :key="s.text"
                     class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-700/50 text-surface-700 dark:text-surface-300 transition-colors flex items-center gap-3"
-                    @click="selectSuggestion(s.id)"
+                    @click="selectSuggestion(s)"
                   >
                     <MagnifyingGlassIcon class="w-4 h-4 text-surface-400" />
                     <span v-html="highlightSuggestion(s.text, searchQuery)" />
@@ -145,12 +165,14 @@
         </div>
       </div>
     </section>
+    </template>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { MagnifyingGlassIcon, ArrowRightIcon } from '@heroicons/vue/24/outline'
 import type { Company, SearchSuggestion } from '~/types'
+import { companySlug } from '~/utils/formatter'
 
 useHead({ title: 'Search Registered Companies in Nepal', meta: [
   { name: 'description', content: 'Free open-source search engine for registered companies in Nepal. Search by name, registration number, address, and more.' },
@@ -161,8 +183,12 @@ const suggestions = ref<SearchSuggestion[]>([])
 const showSuggestions = ref(false)
 const router = useRouter()
 const searchEngine = useSearchEngine()
-const stats = ref<import('~/types').Statistics>({ totalCompanies: 0, latestRegistrationDate: '', lastUpdated: '', todayRegistrations: 0, weeklyRegistrations: 0, monthlyRegistrations: 0, byProvince: {}, byDistrict: {}, byType: {}, byOwnership: {}, byRokka: {}, byCategory: {}, yearlyGrowth: [], timeline: [] })
+const isReady = searchEngine.isIndexReady()
+const dataLoading = ref(!isReady.value)
+const stats = ref<import('~/types').Statistics>({ totalCompanies: 0, latestRegistrationDate: '', todayBS: '', lastUpdated: '', todayRegistrations: 0, weeklyRegistrations: 0, monthlyRegistrations: 0, byProvince: {}, byDistrict: {}, byType: {}, byOwnership: {}, byRokka: {}, byCategory: {}, yearlyGrowth: [], timeline: [] })
 const latestCompanies = ref<Company[]>([])
+
+watch(isReady, (ready) => { dataLoading.value = !ready })
 
 onMounted(async () => {
   stats.value = await searchEngine.getStatistics()
@@ -187,9 +213,9 @@ function highlightSuggestion(text: string, query: string) {
   return text.slice(0, idx) + '<strong class="text-primary-600 dark:text-primary-400 font-semibold">' + text.slice(idx, idx + query.length) + '</strong>' + text.slice(idx + query.length)
 }
 
-function selectSuggestion(textid: string) {
+function selectSuggestion(s: SearchSuggestion) {
   showSuggestions.value = false
-  router.push(`/company/${textid}`)
+  router.push(`/company/${companySlug({ nameEnglish: s.text, id: s.id })}`)
 }
 
 function handleSearch() {
@@ -211,7 +237,7 @@ const popularCategories = computed(() => {
   const s = stats.value
   const cats = Object.entries(s.byCategory).sort((a, b) => b[1] - a[1]).slice(0, 12)
   const iconMap: Record<string, string> = {
-    Technology: 'CpuChipIcon', Software: 'CodeBracketIcon', IT: 'ServerIcon', AI: 'SparklesIcon',
+    Technology: 'CpuChipIcon',
     Education: 'AcademicCapIcon', School: 'BuildingLibraryIcon', College: 'GraduationCapIcon',
     Hospital: 'HeartIcon', Healthcare: 'HeartIcon', Construction: 'BuildingOfficeIcon',
     Engineering: 'WrenchIcon', Finance: 'BanknotesIcon', Bank: 'BuildingLibraryIcon',
@@ -223,8 +249,7 @@ const popularCategories = computed(() => {
     Others: 'Squares2X2Icon',
   }
   const colorMap: Record<string, string> = {
-    Technology: 'from-blue-500 to-blue-600', Software: 'from-cyan-500 to-cyan-600',
-    IT: 'from-sky-500 to-sky-600', AI: 'from-violet-500 to-violet-600',
+    Technology: 'from-blue-500 to-blue-600',
     Education: 'from-emerald-500 to-emerald-600', School: 'from-green-500 to-green-600',
     College: 'from-teal-500 to-teal-600', Hospital: 'from-red-500 to-red-600',
     Healthcare: 'from-rose-500 to-rose-600', Construction: 'from-orange-500 to-orange-600',

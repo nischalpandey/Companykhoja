@@ -1,6 +1,6 @@
 <template>
   <NuxtLink
-    :to="`/company/${company.id}`"
+    :to="`/company/${companySlug(company)}`"
     class="group block bg-white dark:bg-surface-800/50 rounded-2xl border border-surface-200 dark:border-surface-700/50 p-5 hover:border-primary-300 dark:hover:border-primary-700 transition-all hover:shadow-xl hover:shadow-primary-500/5 dark:hover:shadow-primary-500/10 hover:-translate-y-0.5"
     @click="searchStore.addRecentlyViewed(company)"
   >
@@ -52,6 +52,7 @@
 import { computed } from 'vue'
 import { IdentificationIcon, CalendarIcon, MapPinIcon } from '@heroicons/vue/24/outline'
 import type { Company } from '~/types'
+import { companySlug } from '~/utils/formatter'
 
 const props = defineProps<{
   company: Company

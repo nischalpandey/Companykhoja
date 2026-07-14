@@ -12,11 +12,8 @@ interface CategoryRule {
 }
 
 const CATEGORY_RULES: CategoryRule[] = [
-  // Technology
-  { category: 'Technology', keywords: ['tech', 'technology', 'digital', 'innovation', 'smart', 'cyber', 'data', 'cloud', 'internet', 'web', 'online', 'ecommerce', 'e-commerce'], weight: 3 },
-  { category: 'Software', keywords: ['software', 'app', 'application', 'saas', 'platform', 'system', 'solution', 'code', 'dev', 'development', 'programming'], weight: 3 },
-  { category: 'IT', keywords: ['it ', 'information technology', 'infotech', 'computing', 'network', 'server', 'hosting', 'domain'], weight: 3 },
-  { category: 'AI', keywords: ['ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'neural', 'automation', 'robotic', 'bot'], weight: 4 },
+  // Technology (includes Software, IT, AI)
+  { category: 'Technology', keywords: ['tech', 'technology', 'digital', 'innovation', 'smart', 'cyber', 'data', 'cloud', 'internet', 'web', 'online', 'ecommerce', 'e-commerce', 'software', 'app', 'application', 'saas', 'platform', 'system', 'solution', 'code', 'dev', 'development', 'programming', 'it ', 'information technology', 'infotech', 'computing', 'network', 'server', 'hosting', 'domain', 'ai', 'artificial intelligence', 'machine learning', 'ml', 'deep learning', 'neural', 'automation', 'robotic', 'bot'], weight: 3 },
 
   // Education
   { category: 'Education', keywords: ['education', 'educational', 'academy', 'institute', 'learning', 'training', 'coaching', 'tutorial'], weight: 3 },
@@ -115,10 +112,20 @@ export function extractKeywords(name: string): string[] {
  */
 export function getCategoryList(): CompanyCategory[] {
   return [
-    'Technology', 'Software', 'IT', 'AI', 'Education', 'School', 'College',
+    'Technology', 'Education', 'School', 'College',
     'Hospital', 'Healthcare', 'Construction', 'Engineering', 'Finance', 'Bank',
     'Hydropower', 'Manufacturing', 'Agriculture', 'Restaurant', 'Hotel', 'Retail',
     'Import Export', 'NGO', 'Media', 'Marketing', 'Real Estate', 'Logistics',
     'Travel', 'Automobile', 'Startup', 'Others'
   ]
+}
+
+const CATEGORY_ALIASES: Record<string, CompanyCategory> = {
+  'AI': 'Technology',
+  'Software': 'Technology',
+  'IT': 'Technology',
+}
+
+export function normalizeCategory(cat: string): CompanyCategory {
+  return CATEGORY_ALIASES[cat] || (cat as CompanyCategory)
 }

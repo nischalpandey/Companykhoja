@@ -4,7 +4,9 @@
 
 Search, filter, and explore data from the Office of the Company Registrar (OCR), Nepal — all client-side, zero runtime API dependencies.
 
-[https://nischalpandey.github.io/Companykhoja](Live Preview)
+
+[Live Production Site](https://nischalpandey.github.io/Companykhoja/)
+
 
 ## Features
 

@@ -1,4 +1,11 @@
 <template>
+  <div v-if="dataLoading" class="flex items-center justify-center min-h-[60vh]">
+    <div class="text-center">
+      <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <p class="text-surface-500 dark:text-surface-400">Loading company data…</p>
+    </div>
+  </div>
+  <template v-else>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="mb-10">
         <h1 class="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">Browse by Category</h1>
@@ -16,22 +23,26 @@
         />
       </div>
     </div>
+  </template>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import type { CompanyCategory } from '~/types'
 
 useHead({ title: 'Browse Categories' })
 
 const searchEngine = useSearchEngine()
+const isReady = searchEngine.isIndexReady()
+const dataLoading = ref(!isReady.value)
+watch(isReady, (ready) => { dataLoading.value = !ready })
 
 interface CategoryItem { name: string; count: number; icon: string; color: string }
 
 const categories = ref<CategoryItem[]>([])
 
 const iconMap: Record<string, string> = {
-  Technology: 'CpuChipIcon', Software: 'CodeBracketIcon', IT: 'ServerIcon', AI: 'SparklesIcon',
+  Technology: 'CpuChipIcon',
   Education: 'AcademicCapIcon', School: 'BuildingLibraryIcon', College: 'GraduationCapIcon',
   Hospital: 'HeartIcon', Healthcare: 'HeartIcon', Construction: 'BuildingOfficeIcon',
   Engineering: 'WrenchIcon', Finance: 'BanknotesIcon', Bank: 'BuildingLibraryIcon',
@@ -44,8 +55,7 @@ const iconMap: Record<string, string> = {
 }
 
 const colorMap: Record<string, string> = {
-  Technology: 'from-blue-500 to-blue-600', Software: 'from-cyan-500 to-cyan-600',
-  IT: 'from-sky-500 to-sky-600', AI: 'from-violet-500 to-violet-600',
+  Technology: 'from-blue-500 to-blue-600',
   Education: 'from-emerald-500 to-emerald-600', School: 'from-green-500 to-green-600',
   College: 'from-teal-500 to-teal-600', Hospital: 'from-red-500 to-red-600',
   Healthcare: 'from-rose-500 to-rose-600', Construction: 'from-orange-500 to-orange-600',

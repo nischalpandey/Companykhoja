@@ -1,6 +1,9 @@
 import MiniSearch from 'minisearch'
 import Fuse from 'fuse.js'
+import NepaliDate from 'nepali-date-converter'
+import { ref, readonly } from 'vue'
 import type { Company, SearchFilters, SortOption, SearchResult, SearchSuggestion, Statistics } from '~/types'
+import { normalizeCategory } from '~/utils/categorizer'
 
 const SEARCH_FIELDS = ['nameEnglish', 'nameNepali', 'registrationNumber', 'address', 'keywords']
 
@@ -11,6 +14,7 @@ let filterOptionsCache: any = null
 let statisticsCache: Statistics | null = null
 
 let loadPromise: Promise<void> | null = null
+const _isReady = ref(false)
 
 async function ensureLoaded() {
   if (loadPromise) return loadPromise
@@ -19,7 +23,7 @@ async function ensureLoaded() {
     const config = useRuntimeConfig()
     const baseURL = config.public.baseURL
     const res = await fetch(`${baseURL}data/companies.json`)
-    data = await res.json()
+    data = (await res.json()).map((c: Company) => ({ ...c, category: normalizeCategory(c.category) }))
     miniSearch = new MiniSearch({
       fields: SEARCH_FIELDS,
       storeFields: ['id', 'nameEnglish', 'nameNepali', 'registrationNumber', 'registrationDate', 'companyType', 'ownership', 'address', 'province', 'district', 'municipality', 'rokkaStatus', 'category', 'keywords'],
@@ -35,6 +39,7 @@ async function ensureLoaded() {
       ignoreLocation: true,
       useExtendedSearch: true,
     })
+    _isReady.value = true
   })()
   return loadPromise
 }
@@ -102,11 +107,33 @@ export function useClientSearch() {
     if (mergedFilters.district) results = results.filter(c => c.district === mergedFilters.district)
     if (mergedFilters.companyType) results = results.filter(c => c.companyType === mergedFilters.companyType)
     if (mergedFilters.ownership) results = results.filter(c => c.ownership === mergedFilters.ownership)
-    if (mergedFilters.category) results = results.filter(c => c.category === mergedFilters.category)
+    if (mergedFilters.category) {
+      const filterCat = mergedFilters.category
+      const aliases = Object.entries({ AI: 'Technology', Software: 'Technology', IT: 'Technology' })
+        .filter(([, v]) => v === filterCat).map(([k]) => k)
+      results = results.filter(c => c.category === filterCat || aliases.includes(c.category))
+    }
     if (mergedFilters.rokkaStatus) results = results.filter(c => c.rokkaStatus === mergedFilters.rokkaStatus)
     if (mergedFilters.letter) results = results.filter(c => c.nameEnglish.toLowerCase().startsWith(mergedFilters.letter!.toLowerCase()))
     if (mergedFilters.registrationYear) results = results.filter(c => getBsYear(c.registrationDate) === parseInt(mergedFilters.registrationYear!))
     if (mergedFilters.registrationDate) results = results.filter(c => c.registrationDate.split('T')[0] === mergedFilters.registrationDate)
+    if (mergedFilters.since) {
+      const sinceDays = parseInt(mergedFilters.since)
+      if (sinceDays > 0) {
+        try {
+          const todayND = new NepaliDate()
+          const todayMs = todayND.valueOf()
+          results = results.filter(c => {
+            const p = c.registrationDate.split('T')[0].split('-').map(Number)
+            try {
+              const companyND = new NepaliDate(p[0], p[1], p[2])
+              const diffDays = Math.round((todayMs - companyND.valueOf()) / (1000 * 60 * 60 * 24))
+              return diffDays >= 0 && diffDays <= sinceDays
+            } catch { return false }
+          })
+        } catch {}
+      }
+    }
 
     if (sort === 'newest') results.sort((a, b) => b.registrationDate.localeCompare(a.registrationDate))
     else if (sort === 'oldest') results.sort((a, b) => a.registrationDate.localeCompare(b.registrationDate))
@@ -168,6 +195,12 @@ export function useClientSearch() {
     return data.find(c => c.id === id)
   }
 
+  async function getCompanyBySlug(slug: string): Promise<Company | undefined> {
+    const parts = slug.split('-')
+    const id = parts[parts.length - 1]
+    return getCompanyById(id)
+  }
+
   async function getFilterOptions(): Promise<any> {
     if (filterOptionsCache) return filterOptionsCache
     const stats = await getStatistics()
@@ -202,7 +235,8 @@ export function useClientSearch() {
       byType[company.companyType] = (byType[company.companyType] || 0) + 1
       byOwnership[company.ownership] = (byOwnership[company.ownership] || 0) + 1
       byRokka[company.rokkaStatus] = (byRokka[company.rokkaStatus] || 0) + 1
-      byCategory[company.category] = (byCategory[company.category] || 0) + 1
+      const cat = normalizeCategory(company.category)
+      byCategory[cat] = (byCategory[cat] || 0) + 1
       const year = getBsYear(company.registrationDate)
       yearlyGrowth[year] = (yearlyGrowth[year] || 0) + 1
       const date = company.registrationDate.split('T')[0]
@@ -211,27 +245,36 @@ export function useClientSearch() {
       if (company.updatedAt > maxUpdatedAt) maxUpdatedAt = company.updatedAt
     }
 
+    let todayStr = ''
+    let todayMs = 0
+    try {
+      const nd = new NepaliDate()
+      const bs = nd.getBS()
+      todayStr = `${bs.year}-${String(bs.month).padStart(2, '0')}-${String(bs.date).padStart(2, '0')}`
+      todayMs = nd.valueOf()
+    } catch { }
+
     let todayRegistrations = 0
     let weeklyRegistrations = 0
     let monthlyRegistrations = 0
-    if (maxDate) {
-      const maxParts = maxDate.split('-').map(Number)
-      const maxYear = maxParts[0]
-      const maxMonth = maxParts[1]
-      const maxDay = maxParts[2]
+    if (todayStr) {
       for (const company of data) {
         const d = company.registrationDate.split('T')[0]
-        if (d === maxDate) todayRegistrations++
-        const p = d.split('-').map(Number)
-        const diffDays = (maxYear - p[0]) * 365 + (maxMonth - p[1]) * 30 + (maxDay - p[2])
-        if (diffDays >= 0 && diffDays <= 7) weeklyRegistrations++
-        if (diffDays >= 0 && diffDays <= 30) monthlyRegistrations++
+        if (d === todayStr) todayRegistrations++
+        try {
+          const p = d.split('-').map(Number)
+          const companyND = new NepaliDate(p[0], p[1], p[2])
+          const diffDays = Math.round((todayMs - companyND.valueOf()) / (1000 * 60 * 60 * 24))
+          if (diffDays >= 0 && diffDays <= 7) weeklyRegistrations++
+          if (diffDays >= 0 && diffDays <= 30) monthlyRegistrations++
+        } catch { }
       }
     }
 
     statisticsCache = {
       totalCompanies: data.length,
       latestRegistrationDate: maxDate,
+      todayBS: todayStr,
       lastUpdated: maxUpdatedAt,
       todayRegistrations,
       weeklyRegistrations,
@@ -253,8 +296,8 @@ export function useClientSearch() {
   }
 
   function isIndexReady() {
-    return data.length > 0 && miniSearch !== null
+    return readonly(_isReady)
   }
 
-  return { search, autocomplete, getCompanyById, getFilterOptions, getStatistics, isIndexReady }
+  return { search, autocomplete, getCompanyById, getCompanyBySlug, getFilterOptions, getStatistics, isIndexReady }
 }

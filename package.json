@@ -8,7 +8,8 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "build:gh": "npx nuxt build --preset github_pages",
+    "build:gh": "node scripts/generate-sitemap.mjs && npx nuxt build --preset github_pages",
+    "sitemap": "node scripts/generate-sitemap.mjs",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -32,6 +33,7 @@
     "flexsearch": "^0.7.43",
     "fuse.js": "^7.0.0",
     "minisearch": "^6.3.0",
+    "nepali-date-converter": "^3.4.0",
     "pinia": "^2.1.7",
     "qrcode": "^1.5.3",
     "vue-chartjs": "^5.3.1"

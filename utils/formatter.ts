@@ -87,9 +87,6 @@ export function getInitials(name: string): string {
 export function getCategoryColor(category: string): string {
   const colors: Record<string, string> = {
     Technology: 'bg-blue-500',
-    Software: 'bg-cyan-500',
-    IT: 'bg-sky-500',
-    AI: 'bg-violet-500',
     Education: 'bg-emerald-500',
     School: 'bg-green-500',
     College: 'bg-teal-500',
@@ -117,4 +114,19 @@ export function getCategoryColor(category: string): string {
     Others: 'bg-zinc-500',
   }
   return colors[category] || 'bg-gray-500'
+}
+
+export function companySlug(company: { nameEnglish: string; id: string }): string {
+  return company.nameEnglish.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 80)
+    .replace(/-$/, '') + '-' + company.id
+}
+
+export function parseSlug(slug: string): string {
+  const parts = slug.split('-')
+  return parts[parts.length - 1]
 }

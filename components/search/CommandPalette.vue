@@ -48,7 +48,7 @@
                 <button
                   v-for="company in companyResults"
                   :key="company.id"
-                  @click="navigate(`/company/${company.id}`)"
+                  @click="navigate(`/company/${companySlug(company)}`)"
                   class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800/50 text-surface-700 dark:text-surface-300 transition-colors flex items-center gap-3"
                 >
                   <BuildingOfficeIcon class="w-4 h-4 text-surface-400" />
@@ -74,6 +74,7 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { MagnifyingGlassIcon, BuildingOfficeIcon } from '@heroicons/vue/24/outline'
 import type { Company, SearchSuggestion } from '~/types'
+import { companySlug } from '~/utils/formatter'
 
 const searchStore = useSearchStore()
 const router = useRouter()
@@ -120,7 +121,7 @@ function navigate(path: string) {
 }
 
 function execute() {
-  if (companyResults.value.length > 0) navigate(`/company/${companyResults.value[0].id}`)
+  if (companyResults.value.length > 0) navigate(`/company/${companySlug(companyResults.value[0])}`)
   else if (pageResults.value.length > 0) navigate(pageResults.value[0].path)
   else navigate(`/search?q=${encodeURIComponent(query.value)}`)
 }

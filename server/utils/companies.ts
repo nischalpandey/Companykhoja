@@ -92,7 +92,8 @@ function computeStatistics() {
     byType[company.companyType] = (byType[company.companyType] || 0) + 1
     byOwnership[company.ownership] = (byOwnership[company.ownership] || 0) + 1
     byRokka[company.rokkaStatus] = (byRokka[company.rokkaStatus] || 0) + 1
-    byCategory[company.category] = (byCategory[company.category] || 0) + 1
+    const normCat = ({ AI: 'Technology', Software: 'Technology', IT: 'Technology' })[company.category] || company.category
+    byCategory[normCat] = (byCategory[normCat] || 0) + 1
     const year = getBsYear(company.registrationDate)
     yearlyGrowth[year] = (yearlyGrowth[year] || 0) + 1
     const date = company.registrationDate.split('T')[0]
@@ -198,7 +199,11 @@ export function searchCompanies(q: string, filters: Record<string, string> = {},
   if (mergedFilters.district) results = results.filter(c => c.district === mergedFilters.district)
   if (mergedFilters.companyType) results = results.filter(c => c.companyType === mergedFilters.companyType)
   if (mergedFilters.ownership) results = results.filter(c => c.ownership === mergedFilters.ownership)
-  if (mergedFilters.category) results = results.filter(c => c.category === mergedFilters.category)
+    if (mergedFilters.category) {
+      const aliases = Object.entries({ AI: 'Technology', Software: 'Technology', IT: 'Technology' })
+        .filter(([, v]) => v === mergedFilters.category).map(([k]) => k)
+      results = results.filter(c => c.category === mergedFilters.category || aliases.includes(c.category))
+    }
   if (mergedFilters.rokkaStatus) results = results.filter(c => c.rokkaStatus === mergedFilters.rokkaStatus)
   if (mergedFilters.letter) results = results.filter(c => c.nameEnglish.toLowerCase().startsWith(mergedFilters.letter!.toLowerCase()))
   if (mergedFilters.registrationYear) results = results.filter(c => getBsYear(c.registrationDate) === parseInt(mergedFilters.registrationYear!))
