@@ -5,7 +5,7 @@
 Search, filter, and explore data from the Office of the Company Registrar (OCR), Nepal — all client-side, zero runtime API dependencies.
 
 
-[Live Production Site](https://nischalpandey.github.io/Companykhoja/)
+[Live Production Site](https://companykhoja.ngp.com.np)
 
 
 ## Features
@@ -152,7 +152,7 @@ npm run build:gh
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `NUXT_PUBLIC_SITE_URL` | No | `https://nischalpandey.github.io/companykhoja` | Public site URL |
+| `NUXT_PUBLIC_SITE_URL` | No | `https://companykhoja.ngp.com.np` | Public site URL |
 | `OCR_API_URL` | For data sync | `https://camis.ocr.gov.np/` | OCR API endpoint |
 
 ## License

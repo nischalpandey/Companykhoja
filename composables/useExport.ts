@@ -116,7 +116,7 @@ export function useExport() {
         </table>
         <div class="footer">
           <p>Data sourced from Office of Company Registrar (OCR), Nepal</p>
-          <p>https://companykhoja.github.io</p>
+          <p>https://companykhoja.ngp.com.np</p>
         </div>
         <script>window.onload = () => { setTimeout(() => window.print(), 500); };</script>
       </body>

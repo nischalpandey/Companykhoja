@@ -3,7 +3,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
   // ── App Configuration ─────────────────────────────────────────────────────
   app: {
-    baseURL: process.env.NODE_ENV === 'production' ? '/Companykhoja/' : '/',
+    // baseURL: process.env.NODE_ENV === 'production' ? '/Companykhoja/' : '/',
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
@@ -106,8 +106,8 @@ export default defineNuxtConfig({
   // ─- Runtime Config ────────────────────────────────────────────────────────
   runtimeConfig: {
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nischalpandey.github.io/Companykhoja',
-      baseURL: process.env.NODE_ENV === 'production' ? '/Companykhoja/' : '/',
+      // siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://nischalpandey.github.io/Companykhoja',
+      // baseURL: process.env.NODE_ENV === 'production' ? '/Companykhoja/' : '/',
       version: '1.0.0',
     },
   },
