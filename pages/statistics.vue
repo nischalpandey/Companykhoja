@@ -67,19 +67,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import type { Statistics } from '~/types'
 
 useHead({ title: 'Statistics Dashboard' })
 
-const searchEngine = useSearchEngine()
-const isReady = searchEngine.isIndexReady()
-const dataLoading = ref(!isReady.value)
+const siteMeta = useSiteMeta()
+const dataLoading = ref(false)
 const stats = ref<Partial<Statistics>>({ totalCompanies: 0, todayRegistrations: 0, weeklyRegistrations: 0, monthlyRegistrations: 0, todayBS: '', latestRegistrationDate: '', lastUpdated: '', byProvince: {}, byDistrict: {}, byType: {}, byOwnership: {}, byRokka: {}, byCategory: {}, yearlyGrowth: [], timeline: [] })
 
-watch(isReady, (ready) => { dataLoading.value = !ready })
-
-onMounted(async () => { stats.value = await searchEngine.getStatistics() })
+onMounted(async () => {
+  const meta = await siteMeta.load()
+  stats.value = meta.stats
+})
 
 const navigateDate = computed(() => stats.value.todayBS || stats.value.latestRegistrationDate || '')
 

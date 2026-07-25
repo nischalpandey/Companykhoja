@@ -183,17 +183,15 @@ const suggestions = ref<SearchSuggestion[]>([])
 const showSuggestions = ref(false)
 const router = useRouter()
 const searchEngine = useSearchEngine()
-const isReady = searchEngine.isIndexReady()
-const dataLoading = ref(!isReady.value)
+const siteMeta = useSiteMeta()
+const dataLoading = ref(false)
 const stats = ref<import('~/types').Statistics>({ totalCompanies: 0, latestRegistrationDate: '', todayBS: '', lastUpdated: '', todayRegistrations: 0, weeklyRegistrations: 0, monthlyRegistrations: 0, byProvince: {}, byDistrict: {}, byType: {}, byOwnership: {}, byRokka: {}, byCategory: {}, yearlyGrowth: [], timeline: [] })
 const latestCompanies = ref<Company[]>([])
 
-watch(isReady, (ready) => { dataLoading.value = !ready })
-
 onMounted(async () => {
-  stats.value = await searchEngine.getStatistics()
-  const result = await searchEngine.search('', {}, 'newest', 1, 6)
-  latestCompanies.value = result.companies
+  const meta = await siteMeta.load()
+  stats.value = meta.stats
+  latestCompanies.value = meta.latestCompanies
 })
 
 let debounceTimer: ReturnType<typeof setTimeout>

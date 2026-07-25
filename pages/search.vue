@@ -278,21 +278,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   MagnifyingGlassIcon, XMarkIcon, FunnelIcon, ArrowDownTrayIcon,
   ChevronLeftIcon, ChevronRightIcon
 } from '@heroicons/vue/24/outline'
 import type { SearchFilters, SortOption, SearchResult } from '~/types'
+import type { SiteMetaData } from '~/composables/useSiteMeta'
 
 useHead({ title: 'Search Companies' })
 
 const route = useRoute()
 const router = useRouter()
 const searchEngine = useSearchEngine()
-const isReady = searchEngine.isIndexReady()
-const dataLoading = ref(!isReady.value)
-watch(isReady, (ready) => { dataLoading.value = !ready })
+const siteMeta = useSiteMeta()
+const dataLoading = ref(false)
 const { exportCompanies } = useExport()
 
 const query = ref('')
@@ -305,7 +305,7 @@ const loading = ref(false)
 const showExportMenu = ref(false)
 const showWebResults = ref(false)
 const webResults = ref<any>(null)
-const filterOptions = ref({ provinces: [], districts: [], types: [], ownerships: [], categories: [], rokkaStatuses: [], years: [] })
+const filterOptions = ref<SiteMetaData['filterOptions']>({ provinces: [], districts: [], types: [], ownerships: [], categories: [], rokkaStatuses: [], years: [] })
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
@@ -333,10 +333,8 @@ const paginationRange = computed(() => {
 })
 
 onMounted(async () => {
-  filterOptions.value = await searchEngine.getFilterOptions()
-  // remove empty filters which is =''
-
-
+  const meta = await siteMeta.load()
+  filterOptions.value = meta.filterOptions
 
   const { q, province, district, type, ownership, category, rokka, year, date, since, sort: sortParam, page: pageParam } = route.query
   if (q) query.value = String(q)
@@ -351,7 +349,11 @@ onMounted(async () => {
   if (since) filters.value.since = String(since)
   if (sortParam) sort.value = String(sortParam) as SortOption
   if (pageParam) page.value = parseInt(String(pageParam))
-  executeSearch()
+
+  const shouldAutoSearch = Boolean(q || province || district || type || ownership || category || rokka || year || date || since)
+  if (shouldAutoSearch) {
+    executeSearch()
+  }
 })
 
 let searchTimer: ReturnType<typeof setTimeout>
@@ -366,6 +368,11 @@ function handleInput() {
 
 async function executeSearch() {
   clearTimeout(searchTimer)
+  if (!query.value.trim() && !hasActiveFilters.value) {
+    results.value = null
+    loading.value = false
+    return
+  }
   loading.value = true
   try {
     const searchResults = await searchEngine.search(query.value, filters.value, sort.value, page.value, perPage)
