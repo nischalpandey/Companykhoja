@@ -10,6 +10,8 @@
       <div class="mb-8">
         <h1 class="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">Statistics Dashboard</h1>
         <p class="text-lg text-surface-500 dark:text-surface-400">Insights and analytics on registered companies in Nepal</p>
+      <h3 class="text-sm text-blue-500">As of Last updated: {{ stats.lastUpdated?.split('T')[0] }}</h3>
+
       </div>
 
       <!-- Stat Cards -->

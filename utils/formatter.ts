@@ -1,17 +1,6 @@
 export function formatDate(dateStr: string): string {
   if (!dateStr) return 'N/A'
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-    const [y, m, d] = dateStr.split('-')
-    const months = ['Baisakh', 'Jestha', 'Ashad', 'Shrawan', 'Bhadra', 'Ashwin', 'Kartik', 'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra']
-    const monthIndex = (parseInt(m) - 2 + 12) % 12
-    return `${months[monthIndex]} ${parseInt(d)}, ${y} BS`
-  }
-  try {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-  } catch {
-    return dateStr
-  }
+return dateStr
 }
 
 export function formatNumber(num: number): string {

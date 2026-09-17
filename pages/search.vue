@@ -21,13 +21,13 @@
               @keyup.enter="executeSearch"
             />
             <button
-              v-if="query"
+              v-if="query || hasActiveFilters"
               @click="clearSearch"
               class="p-2 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors"
             >
               <XMarkIcon class="w-5 h-5" />
             </button>
-            <button
+            <button 
               @click="executeSearch"
               class="mr-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
@@ -310,7 +310,7 @@ const filterOptions = ref<SiteMetaData['filterOptions']>({ provinces: [], distri
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
 const searchExamples = [
-  'registered:2083', 'kathmandu', 'private',
+  'registered:2083', 'kathmandu', 'group',
   'nepali', 'rokka:true', 'year:2082', 'tech',
 ]
 
@@ -366,8 +366,11 @@ function handleInput() {
   }, 400)
 }
 
+
+
 async function executeSearch() {
   clearTimeout(searchTimer)
+
   if (!query.value.trim() && !hasActiveFilters.value) {
     results.value = null
     loading.value = false

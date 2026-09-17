@@ -1,4 +1,6 @@
 <template>
+    <NuxtLoadingIndicator />
+
     <div v-if="dataLoading" class="flex items-center justify-center min-h-[60vh]">
       <div class="text-center">
   <div class="relative w-12 h-12 mx-auto mb-4">
