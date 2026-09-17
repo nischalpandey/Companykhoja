@@ -8,7 +8,6 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
-      titleTemplate: '%s | CompanyKhoja - Nepal Company Search',
       meta: [
         { name: 'description', content: 'Open-source search engine for registered companies in Nepal. Search by name, registration number, address, and more.' },
         { name: 'theme-color', content: '#0f172a' },
