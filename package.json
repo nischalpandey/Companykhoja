@@ -10,7 +10,7 @@
     "build": "node scripts/generate-site-meta.mjs && nuxt build",
     "build:gh": "node scripts/generate-sitemap.mjs && node scripts/generate-site-meta.mjs && node scripts/generate-company-all.mjs && npx nuxt build --preset github_pages",
     "sitemap": "node scripts/generate-sitemap.mjs",
-    "seo": "node scripts/generate-company-all.mjs",
+    "seo": "node generate-company-all.mjs",
     "site-meta": "node scripts/generate-site-meta.mjs",
     "dev": "nuxt dev",
     "generate": "node scripts/generate-site-meta.mjs && nuxt generate",

@@ -1,42 +1,86 @@
 # https://github.com/actions/deploy-pages#usage
 name: Deploy to GitHub Pages
+
 on:
   workflow_dispatch:
   push:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - run: corepack enable
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
-      # Pick your own package manager and build script
-      - run: npm install
-      - run: npx nuxt build --preset github_pages
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ------------------------------------------
+      # 1. Build Nuxt FIRST
+      # ------------------------------------------
+      - name: Build Nuxt
+        run: npx nuxt build --preset github_pages
+        env:
+          NUXT_PUBLIC_SITE_URL: https://companykhoja.ngp.com.np
+
+      # ------------------------------------------
+      # 2. Generate company HTML AFTER Nuxt build
+      # ------------------------------------------
+      - name: Generate SEO company pages
+        run: npm run seo
+        env:
+          NUXT_PUBLIC_SITE_URL: https://companykhoja.ngp.com.np
+
+      # ------------------------------------------
+      # 3. Check output
+      # ------------------------------------------
+      - name: Check generated files
+        run: |
+          echo "Company pages:"
+          find .output/public/company -name "index.html" | wc -l
+
+          echo "Output size:"
+          du -sh .output/public
+
+          echo "Example company page:"
+          test -f .output/public/company/loko-enterprises-351465/index.html
+
+          echo "✅ Company page exists"
+
+      # ------------------------------------------
+      # 4. Upload everything
+      # ------------------------------------------
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./.output/public
-  # Deployment job
+
   deploy:
-    # Add a dependency to the build job
     needs: build
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+
     permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    # Deploy to the github_pages environment
+      pages: write
+      id-token: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    # Specify runner + deployment step
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
