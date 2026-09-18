@@ -13,6 +13,7 @@ const ROOT = join(__dirname, '..')
 
 const DATA_FILE = join(
   ROOT,
+  'public',
   'data',
   'companies.json'
 )

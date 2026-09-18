@@ -34,8 +34,25 @@ jobs:
         env:
           NUXT_PUBLIC_SITE_URL: https://companykhoja.ngp.com.np
 
+
+      - name: Check company data
+        run: |
+          echo "Current directory:"
+          pwd
+
+          echo "Files:"
+          ls -la
+
+          echo "Public:"
+          ls -la public || true
+
+          echo "Public data:"
+          ls -la public/data || true
+
+          echo "Company JSON:"
+          ls -lh public/data/companies.json
       # ------------------------------------------
-      # 2. Generate company HTML AFTER Nuxt build
+      #  Generate company HTML AFTER Nuxt build
       # ------------------------------------------
       - name: Generate SEO company pages
         run: npm run seo
@@ -59,7 +76,7 @@ jobs:
           echo "✅ Company page exists"
 
       # ------------------------------------------
-      # 4. Upload everything
+      #  Upload everything
       # ------------------------------------------
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
