@@ -1,29 +1,27 @@
 <template>
-  <div v-if="dataLoading" class="flex items-center justify-center min-h-[60vh]">
-    <div class="text-center">
-      <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-      <p class="text-surface-500 dark:text-surface-400">Loading company data…</p>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-10">
+      <h1 class="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">Browse by Category</h1>
+      <p class="text-lg text-surface-500 dark:text-surface-400">Explore companies across different industries in Nepal</p>
+    </div>
+
+    <div v-if="dataLoading" class="flex items-center justify-center gap-2 py-16 text-sm text-surface-500 dark:text-surface-400">
+      <div class="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      Loading categories…
+    </div>
+
+    <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <CategoryCard
+        v-for="(cat, i) in categories"
+        :key="cat.name"
+        :name="cat.name"
+        :count="cat.count"
+        :icon="cat.icon"
+        :color="cat.color"
+        :delay="0.05 * i"
+      />
     </div>
   </div>
-  <template v-else>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="mb-10">
-        <h1 class="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">Browse by Category</h1>
-        <p class="text-lg text-surface-500 dark:text-surface-400">Explore companies across different industries in Nepal</p>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        <CategoryCard
-          v-for="(cat, i) in categories"
-          :key="cat.name"
-          :name="cat.name"
-          :count="cat.count"
-          :icon="cat.icon"
-          :color="cat.color"
-          :delay="0.05 * i"
-        />
-      </div>
-    </div>
-  </template>
 </template>
 
 <script setup lang="ts">

@@ -14,33 +14,50 @@ let filterOptionsCache: any = null
 let statisticsCache: Statistics | null = null
 
 let loadPromise: Promise<void> | null = null
+let loadingIndicator: ReturnType<typeof useLoadingIndicator> | null = null
 const _isReady = ref(false)
 
 async function ensureLoaded() {
+  if (_isReady.value || data.length) return
   if (loadPromise) return loadPromise
+
+  // companies.json is the only sizeable download — show Nuxt's built-in
+  // progress bar while it downloads and the search index is built.
+  loadingIndicator?.start()
+
   loadPromise = (async () => {
-    if (data.length) return
-    const config = useRuntimeConfig()
-    const baseURL = config.public.baseURL
-    const res = await fetch(`${baseURL}data/companies.json`)
-    data = (await res.json()).map((c: Company) => ({ ...c, category: normalizeCategory(c.category) }))
-    miniSearch = new MiniSearch({
-      fields: SEARCH_FIELDS,
-      storeFields: ['id', 'nameEnglish', 'nameNepali', 'registrationNumber', 'registrationDate', 'companyType', 'ownership', 'address', 'province', 'district', 'municipality', 'rokkaStatus', 'category', 'keywords'],
-      searchOptions: { boost: { nameEnglish: 3, nameNepali: 2, registrationNumber: 2.5 }, fuzzy: 0.2, prefix: true },
-    })
-    miniSearch.addAll(data)
-    fuseInstance = new Fuse(data, {
-      keys: SEARCH_FIELDS,
-      threshold: 0.4,
-      includeScore: true,
-      includeMatches: true,
-      minMatchCharLength: 2,
-      ignoreLocation: true,
-      useExtendedSearch: true,
-    })
-    _isReady.value = true
+    let failed = false
+    try {
+      const config = useRuntimeConfig()
+      const baseURL = config.public.baseURL
+      const res = await fetch(`${baseURL}data/companies.json`)
+      if (!res.ok) throw new Error(`Failed to load company data (HTTP ${res.status})`)
+      data = (await res.json()).map((c: Company) => ({ ...c, category: normalizeCategory(c.category) }))
+      miniSearch = new MiniSearch({
+        fields: SEARCH_FIELDS,
+        storeFields: ['id', 'nameEnglish', 'nameNepali', 'registrationNumber', 'registrationDate', 'companyType', 'ownership', 'address', 'province', 'district', 'municipality', 'rokkaStatus', 'category', 'keywords'],
+        searchOptions: { boost: { nameEnglish: 3, nameNepali: 2, registrationNumber: 2.5 }, fuzzy: 0.2, prefix: true },
+      })
+      miniSearch.addAll(data)
+      fuseInstance = new Fuse(data, {
+        keys: SEARCH_FIELDS,
+        threshold: 0.4,
+        includeScore: true,
+        includeMatches: true,
+        minMatchCharLength: 2,
+        ignoreLocation: true,
+        useExtendedSearch: true,
+      })
+      _isReady.value = true
+    } catch (err) {
+      failed = true
+      throw err
+    } finally {
+      loadingIndicator?.finish({ error: failed })
+      loadPromise = null
+    }
   })()
+
   return loadPromise
 }
 
@@ -66,6 +83,9 @@ function parseAdvancedQuery(query: string): { terms: string[]; filters: Record<s
 }
 
 export function useClientSearch() {
+  if (import.meta.client) {
+    loadingIndicator = useLoadingIndicator()
+  }
 
   async function search(
     q: string,
